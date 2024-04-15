@@ -4,8 +4,8 @@ google-cloud-aiplatform
 google-generativeai
 markdown
 Gunicorn
-mediapipe == 3.20.1
-tensorflow
+mediapipe
+tensorflow == 2.9.1
 cvzone
 opencv-python
 numpy
