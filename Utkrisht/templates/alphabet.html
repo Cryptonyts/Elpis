@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alphabet Trace Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #5896d7;
+            background-image: url('./static/bg.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        #canvas-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            margin: 20px auto;
+            border: 2px solid #000;
+            background-color: #d3f5fb;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        #clearBtn, #checkBtn, #nextBtn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            font-size: 16px;
+        }
+
+        #feedback {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Alphabet Trace Game</h1>
+    <div id="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
+    <button id="clearBtn">Clear</button>
+    <button id="checkBtn">Check</button>
+    <button id="nextBtn">Next</button>
+    <div id="feedback"></div>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const clearBtn = document.getElementById('clearBtn');
+        const checkBtn = document.getElementById('checkBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const feedbackDiv = document.getElementById('feedback');
+
+        canvas.width = 800;
+        canvas.height = 600;
+        ctx.lineWidth = 5;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = 'rgba(100,100,100, 0.5)'; // Change color and opacity here
+
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const referencePaths = {
+            'A': [[50, 300], [150, 100], [250, 300], [200, 300], [150, 200], [100, 200], [50, 300]],
+            'B': [[50, 150], [50, 450], [200, 450], [250, 350], [200, 250], [50, 250], [200, 250], [250, 150], [200, 50], [50, 50]],
+            'C': [[250, 50], [150, 50], [50, 150], [50, 350], [150, 450], [250, 450]],
+            'D': [[50, 150], [50, 450], [150, 450], [250, 350], [250, 150], [150, 50], [50, 50]],
+            'E': [[50, 50], [50, 450], [250, 450], [50, 450], [50, 250], [200, 250], [50, 250]],
+            'F': [[50, 50], [50, 450], [250, 450], [50, 450], [50, 250], [200, 250]],
+            'G': [[250, 50], [150, 50], [50, 150], [50, 350], [150, 450], [250, 450], [250, 250], [200, 250]],
+            'H': [[50, 50], [50, 450], [50, 250], [250, 250], [250, 450], [250, 50]],
+            'I': [[100, 50], [200, 50], [150, 50], [150, 450], [100, 450], [200, 450]],
+            'J': [[200, 50], [200, 450], [150, 450], [100, 350], [100, 50]],
+            'K': [[50, 50], [50, 450], [50, 250], [250, 450], [50, 250], [250, 50]],
+            'L': [[50, 50], [50, 450], [50, 450], [250, 450]],
+            'M': [[50, 50], [50, 450], [150, 250], [250, 450], [250, 50]],
+            'N': [[50, 50], [50, 450], [250, 50], [250, 450]],
+            'O': [[100, 100], [50, 200], [100, 300], [200, 300], [250, 200], [200, 100], [100, 100]],
+            'P': [[50, 50], [50, 450], [200, 450], [250, 350], [200, 250], [50, 250]],
+            'Q': [[100, 100], [50, 200], [100, 300], [200, 300], [250, 250], [200, 200], [250, 100], [100, 100], [200, 200]],
+            'R': [[50, 50], [50, 450], [200, 450], [250, 350], [200, 250], [50, 250], [200, 250], [250, 50]],
+            'S': [[250, 50], [150, 50], [50, 150], [150, 200], [250, 250], [150, 300], [50, 300]],
+            'T': [[50, 50], [250, 50], [150, 50], [150, 450]],
+            'U': [[50, 50], [50, 450], [200, 450], [250, 50]],
+            'V': [[50, 50], [150, 450], [250, 50]],
+            'W': [[50, 50], [100, 450], [150, 250], [200, 450], [250, 50]],
+            'X': [[50, 50], [250, 450], [150, 250], [50, 450], [250, 50]],
+            'Y': [[50, 50], [150, 250], [250, 50], [150, 250], [150, 450]],
+            'Z': [[50, 50], [250, 50], [50, 450], [250, 450]]
+        };
+
+        let currentLetterIndex = 0;
+        let isDrawing = false;
+        let userPath = [];
+
+        function drawLetter(letter) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = 'bold 150px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(letter, canvas.width / 2, canvas.height / 2);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            userPath.push([x, y]);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            userPath = [];
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.closePath();
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawLetter(alphabet[currentLetterIndex]);
+            feedbackDiv.textContent = '';
+            userPath = [];
+        }
+
+        function checkTracing() {
+            const referencePath = referencePaths[alphabet[currentLetterIndex]];
+            const userLength = userPath.length;
+            const refLength = referencePath.length;
+            let numCorrectPoints = 0;
+
+            if (userLength === 0) return;
+
+            for (let i = 0; i < Math.min(userLength, refLength); i++) {
+                const userPoint = userPath[i];
+                const refPoint = referencePath[i];
+                const dx = userPoint[0] - refPoint[0];
+                const dy = userPoint[1] - refPoint[1];
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                console.log(distance);
+                if (distance < 10) {
+                    numCorrectPoints++;
+                }
+            }
+
+            const accuracy = (numCorrectPoints / refLength) * 100;
+            console.log('Accuracy:', accuracy);
+
+            if (accuracy >= 80) {
+                feedbackDiv.textContent = 'Great job! You traced the letter correctly.';
+            } else {
+                feedbackDiv.textContent = 'Oops! Try tracing the letter again.';
+            }
+        }
+
+        function nextLetter() {
+            currentLetterIndex++;
+            if (currentLetterIndex < alphabet.length) {
+                drawLetter(alphabet[currentLetterIndex]);
+            } else {
+                alert('Congratulations! You have completed tracing all the letters.');
+                currentLetterIndex = 0;
+                drawLetter(alphabet[currentLetterIndex]);
+            }
+            feedbackDiv.textContent = '';
+            userPath = [];
+        }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        clearBtn.addEventListener('click', clearCanvas);
+        checkBtn.addEventListener('click', checkTracing);
+        nextBtn.addEventListener('click', nextLetter);
+
+        drawLetter(alphabet[currentLetterIndex]);
+    </script>
+</body>
+</html>

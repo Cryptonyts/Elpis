@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Welcome{% endblock %}</title>
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <div class="container">
+        <a href="/"  style="text-decoration: none">
+            <img src="./static/aroma.png" class="navbar-brand" style="height: 60px" ></img>
+            <span style="background: rgb(2, 98, 154); font-size: 25px; -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: bold;">Utkrisht</span>
+
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item" style="color: blue;">
+                    <a class="nav-link" href="/draft1">Game 1</a>
+                </li>
+                <li class="nav-item" style="color: blue;">
+                    <a class="nav-link" href="/standing">Game 2</a>
+                </li>
+                
+                <li class="nav-item" style="color: blue;">
+                    <a class="nav-link" href="/alphabet">Game 3</a>
+                </li>
+                <li class="nav-item" style="color: blue;">
+                    <a class="nav-link" href="https://saty70.github.io/memoryGame/">Game 4</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Page Content -->
+<div class="container mt-5 pt-5"> <!-- Adjusted margin and padding to account for fixed navbar -->
+    {% block content %}
+    <!-- Content goes here -->
+    {% endblock %}
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚗 Car Standing Line Practice 🚗</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-image: url('./static/bg.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        h2 {
+            font-family: 'Arial Black', Gadget, sans-serif;
+            font-size: 48px;
+            color: #ff69b4;
+            margin-bottom: 20px;
+            transform: skewY(-5deg);
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #ffd700;
+            border-radius: 10px;
+        }
+
+        #canvas {
+            border: 1px solid black;
+            cursor: crosshair;
+        }
+
+        .button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        .alert {
+            background-color: #f44336;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .arrow {
+            position: absolute;
+            font-size: 24px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h2>🚗 Car Standing Line Practice 🚗</h2>
+    <p>Click and drag your mouse to draw standing lines using car emojis (🚗) within the boundaries.</p>
+    <canvas id="canvas" width="600" height="400"></canvas>
+    <div>
+        <button class="button" onclick="clearCanvas()">Clear Canvas</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        const car = "🚗";
+
+        // Draw the reference path with arrows
+        function drawReferencePath() {
+            const pathLength = 400;
+            const emojiGap = 10;
+            const totalEmojiWidth = 40; // Width of the emoji
+            const pathX = 80; // Starting X-coordinate for reference path
+            const pathY = 50 + emojiGap; // Starting Y-coordinate for reference path with gap
+
+            let currentY = pathY; // Current Y-coordinate for reference path
+
+            context.font = "30px 'Comic Sans MS', cursive, sans-serif";
+
+            for (let i = 0; i < pathLength / totalEmojiWidth; i++) {
+                context.fillText(car, pathX, currentY);
+                // Draw arrows
+                context.fillStyle = 'red';
+                context.fillText('⬇️', pathX + 15, currentY + 30);
+                currentY += totalEmojiWidth + emojiGap;
+            }
+        }
+
+        function drawBoundaries() {
+            // Draw the boundary lines with gap
+            const boundaryX = 480; // Starting X-coordinate for boundary lines with reduced gap
+
+            context.beginPath();
+            context.moveTo(boundaryX, 50);
+            context.lineTo(boundaryX, 450);
+            context.moveTo(boundaryX + 20, 50);
+            context.lineTo(boundaryX + 20, 450); // Adding a gap of 20 pixels
+            context.strokeStyle = 'red';
+            context.stroke();
+        }
+
+        function startDrawing(event) {
+            isDrawing = true;
+            lastX = event.offsetX;
+            lastY = event.offsetY;
+            context.beginPath();
+            context.moveTo(lastX, lastY);
+        }
+
+        function draw(event) {
+            if (!isDrawing) return;
+            if (event.offsetX < 480 || event.offsetX > 500) {
+                alert("Please stay within the boundary lines.");
+                stopDrawing();
+                return;
+            }
+            context.fillText(car, event.offsetX, event.offsetY);
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            context.closePath();
+        }
+
+        function clearCanvas() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            drawReferencePath();
+            drawBoundaries();
+        }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+
+        drawReferencePath();
+        drawBoundaries();
+    </script>
+</body>
+</html>

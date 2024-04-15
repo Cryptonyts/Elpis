@@ -1,0 +1,29 @@
+{% extends 'layout2.html' %}
+{% block body %}
+<head>
+    <title>Output</title>
+
+    <script> //Select Navbar item to color here (use Ids for that)
+       var listItemToColor="summary";
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Include Mermaid JS Library from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function(){
+            // Initialize Mermaid
+            mermaid.initialize({startOnLoad:true});
+        });
+    </script>
+
+</head>
+<body>
+    <h1>Flowchart : </h1>
+    <div class="mermaid">
+        graph TD;
+            CO2[CO2 + H2O] -->|Light Energy| Chlorophyll[Chlorophyll];
+            Chlorophyll -->|Photosynthesis| Glucose[Glucose + O2];
+    </div>
+</body>
+{% endblock %}

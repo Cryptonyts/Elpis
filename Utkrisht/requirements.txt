@@ -1,0 +1,5 @@
+flask
+assemblyai
+google-cloud-aiplatform
+google-generativeai
+markdown
