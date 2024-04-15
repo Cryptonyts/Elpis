@@ -1,0 +1,11 @@
+flask
+assemblyai
+google-cloud-aiplatform
+google-generativeai
+markdown
+Gunicorn
+mediapipe == 3.20.1
+tensorflow
+cvzone
+opencv-python
+numpy
